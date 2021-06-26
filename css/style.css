@@ -1,0 +1,27 @@
+:root {
+  /* Key colors */
+  --color-1: #343a40;
+  --color-2: #e3ed35;
+  --color-3: #2fc7dc;
+  --color-4: rgb(228, 221, 221);
+  /* Text Sizes */
+  --title-size: 34 px;
+  --button-size: 20 px;
+  --text-size: 16 px;
+  /* margins buttons*/
+  --margin-button: 10px;
+}
+.boxHs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* width: ; */    
+}
+
+* {
+  background-color: var(--color-1);
+}
+
+button {
+  margin: var(--margin-button);
+}
