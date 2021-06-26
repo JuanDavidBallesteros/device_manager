@@ -11,17 +11,46 @@
   /* margins buttons*/
   --margin-button: 10px;
 }
+.title1 {
+  color: var(--color-2);
+  font-size: large;
+  font-weight: 600;
+}
+.title2 {
+  color: var(--color-3);
+  font-size: large;
+  font-weight: 600;
+}
 .boxHs {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  /* width: ; */    
+  padding: 15px;
+  /* width: ; */
 }
 
-* {
+.boxCentered{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+}
+.ico{
+  display: inline;
+}
+
+.body {
   background-color: var(--color-1);
 }
 
-button {
+/* button {
   margin: var(--margin-button);
+} */
+.form-row {
+  margin: 15px 0;
+}
+
+main{
+  padding: 0 30px;
 }
