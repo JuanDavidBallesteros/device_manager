@@ -55,7 +55,7 @@
         <!-- Actions START -->
         <div class="container-fluid boxHs">
             <h1 class="title">Devices</h1>
-            <button type="button" class="btn btn-light " data-toggle="modal" data-target="#exampleModal">Add
+            <button type="button" class="btn btn-light" id="addDeviceButton" data-toggle="modal" data-target="#exampleModal">Add
                 Device</i></button>
         </div>
         <!-- Table START -->
@@ -105,7 +105,7 @@
 </body>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade w3-animate-zoom" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="alert alert-danger d-none" role="alert" id="alertModal">
@@ -121,8 +121,8 @@
                     <input type="hidden" id="index">
                     <div class="form-row">
                         <div class="col">
-                            <div class="form-group">
-                                <select  class="form-control" id="deviceType">
+                            <!-- <div class="form-group"> -->
+                                <select  class="form-control" id="zone">
                                     <option>Zone</option>
                                     <option>Living room</option>
                                     <option>Bed room 1</option>
@@ -130,7 +130,7 @@
                                     <option>Bathroom</option>
                                     <option>Kitchen</option>
                                 </select>
-                            </div>
+                            <!-- </div> -->
                         </div>
                     </div>
                     <div class="form-row">
@@ -138,7 +138,7 @@
                             <input type="text" id="name" class="form-control" placeholder="Name">
                         </div>
                         <div class="col">
-                            <select class="form-control" id="zones">
+                            <select class="form-control" id="deviceType">
                                 <option>Device Type</option>
                                 <option>Monitoring</option>
                                 <option>Temperature</option>
@@ -155,7 +155,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info" id="addDevice" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-info" id="addDevice" >Save</button>
             </div>
         </div>
     </div>
