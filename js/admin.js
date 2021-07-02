@@ -1,44 +1,42 @@
-const devicesHTML = document.getElementById('devicesList');
+const adminsHTML = document.getElementById('adminsList');
 const alerts = document.getElementById('alerts');
 let hiddenElement = document.getElementById('index');
 
 //modal elements
 const form = document.getElementById('form');
-const zoneModal = document.getElementById('zone');
+const lastNameModal = document.getElementById('lastName');
 const nameModal = document.getElementById('name');
-const typeModal = document.getElementById('deviceType');
 const idModal = document.getElementById('id');
-const btnAdd = document.getElementById('addDevice');
-const btnCancel = document.getElementById('cancelDevice');
+
+const btnAdd = document.getElementById('addModal');
+const btnCancel = document.getElementById('cancel');
 const alertModal = document.getElementById('alertModal');
 
-let devices = [
+let admins = [
     {
-        zone: 'Living room',
-        name: 'Beo play sound',
-        deviceType: 'Player',
-        id: '#PS-122'
+        name: 'Camilo',
+        lastName: 'Perez',
+        id: '239002',
     }
 ];
 
 function addDeviceModal(e) {
     e.preventDefault();
-    if (zoneModal.value && nameModal.value && typeModal.value && idModal.value || zoneModal.value === 'Zone' && nameModal.value && typeModal.value === 'Device Type' && idModal.value) {
-        let newDevice = {
-            zone: zoneModal.value,
+    if (lastNameModal.value && nameModal.value && idModal.value) {
+        let data = {
+            lastName: lastNameModal.value,
             name: nameModal.value,
-            deviceType: typeModal.value,
-            id: `#${idModal.value}`
+            id: idModal.value,
         }
         if (btnAdd.innerHTML === 'Save') {
-            devices.push(newDevice);
-            listDevices();
+            admins.push(data);
+            listAdmins();
             $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
             showAlert(alerts, 'Device saved', 'alert-success', 2000);
             resetModal();
-        } else if (btnAdd.innerHTML === 'Update') {
-            devices[hiddenElement] = newDevice;
-            listDevices();
+        } else if(btnAdd.innerHTML === 'Update'){
+            admins[hiddenElement] = data;
+            listAdmins();
             $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
             showAlert(alerts, 'Device updated', 'alert-success', 2000);
             resetModal();
@@ -49,12 +47,12 @@ function addDeviceModal(e) {
     }
 }
 
-function listDevices() {
-    let listDevicesHtml = devices.map((device, index) => `
+function listAdmins() {
+    let listAdminsHtml = admins.map((device, index) => `
     <tr>
         <th class="title1" scope="row">${index + 1}</th>
         <td>${device.name}</td>
-        <td>${device.zone}</td>
+        <td>${device.lastName}</td>
         <td>${device.id}</td>
         <td>
             <div class="btn-group" role="group" aria-label="Basic example">
@@ -67,35 +65,29 @@ function listDevices() {
     </tr>
     `).join('');
 
-    devicesHTML.innerHTML = listDevicesHtml;
+    adminsHTML.innerHTML = listAdminsHtml;
 }
 
 function deleteItem(element) { // DELETE INFO
     index = element.dataset.index;
     console.log(index);
-    devices.splice(index, 1);
-    listDevices();
+    admins.splice(index, 1);
+    listAdmins();
 }
 
-/* function deleteItem(element) { // DELETE INFO
-    index = element.dataset.index;
-    devices = devices.filter((device, pos)=>pos !== index);
-    listDevices();
-} */
 function editItem(element) { // EDIT INFO
     index = element.dataset.index;
     hiddenElement = index;
 
     $('#exampleModal').modal('show');
 
-    zoneModal.value = devices[index].zone;
-    nameModal.value = devices[index].name;
-    typeModal.value = devices[index].deviceType;
-    idModal.value = devices[index].id;
+    lastNameModal.value = admins[index].size;
+    nameModal.value = admins[index].name;
+    idModal.value = admins[index].id;
 
     btnAdd.innerHTML = 'Update';
-
 }
+
 function showAlert(alert, ms, type, time) {
     alert.classList.remove(`d-none`);
     alert.classList.add(type);
@@ -105,6 +97,7 @@ function showAlert(alert, ms, type, time) {
         return hideAlert(alert, type)
     }, time);
 }
+
 function hideAlert(alert, type) {
     alert.classList.add('d-none');
     alert.classList.remove(`${type}`);
@@ -113,15 +106,12 @@ function hideAlert(alert, type) {
 
 function resetModal() {
     btnAdd.innerHTML = 'Save';
-    zoneModal.value = 'Zone';
+    lastNameModal.value = '';
     nameModal.value = '';
-    typeModal.value = 'Device Type';
     idModal.value = '';
 }
 
-listDevices();
+listAdmins();
 resetModal();
 btnAdd.onclick = addDeviceModal;
 btnCancel.onclick = resetModal;
-
-

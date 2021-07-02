@@ -9,11 +9,15 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
         integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <link REL=StyleSheet HREF="/css/style.css" TYPE="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/v4-shims.css">
+    <link rel=StyleSheet href="/css/style.css" type="text/css">
     <title>Device Manager</title>
 </head>
 
 <body class="body">
+    <div class="alert d-none" role="alert" id="alerts">
+    </div>
     <header>
         <!-- Nav Bar START -->
         <div class="container-fluid">
@@ -31,11 +35,8 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/zones/index.html">Zones</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/suppliers/index.html">Suppliers</a>
-                        </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="/maintenance/index.html">Maintenance<span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="/administrator/index.html">Administrators<span class="sr-only">(current)</span></a>
                         </li>
                     </ul>
                     <form class="form-inline">
@@ -50,51 +51,36 @@
     <main>
         <!-- Actions START -->
         <div class="container-fluid boxHs">
-            
-                <button type="button" class="btn btn-light">Add Device</button>
-            
+            <h1 class="title">Administrators</h1>
+            <button type="button" class="btn btn-light" id="addDeviceButton" data-toggle="modal"
+                data-target="#exampleModal">Add
+                Admin</i></button>
         </div>
         <!-- Table START -->
-        <div class="container-fluid">
+        <div class="container-fluid boxCentered">
             <table class="table table-dark">
                 <thead>
                     <tr class="title1">
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Zone</th>
+                        <th scope="col">LastName</th>
                         <th scope="col">ID</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th class="title1" scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th class="title1" scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th class="title1" scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
+                <tbody id="adminsList">
+
                 </tbody>
             </table>
 
     </main>
 
+
+
     <footer>
 
     </footer>
 
-    <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -103,13 +89,50 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
         crossorigin="anonymous"></script>
-
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-    -->
+    <script defer src="/js/admin.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.13.0/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.13.0/js/v4-shims.js"></script>
 </body>
+
+<!-- Modal -->
+<div class="modal fade w3-animate-zoom" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="alert alert-danger d-none" role="alert" id="alertModal">
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add new admin</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form">
+                    <input type="hidden" id="index">
+                    <div class="form-row">
+                        
+                            <div class="col">
+                                <input type="text" id="name" class="form-control" placeholder="Name">
+                            </div>
+                            <div class="col">
+                                <input type="text" id="lastName" class="form-control" placeholder="Last Name">
+                            </div>
+                        
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <input type="text" id="id" class="form-control" placeholder="ID">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" id="cancel">Close</button>
+                <button type="button" class="btn btn-info" id="addModal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </html>
