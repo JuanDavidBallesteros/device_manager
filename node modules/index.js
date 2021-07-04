@@ -2,7 +2,9 @@ const http = require('http');
 const url = require('url');
 const stringDecoder = require('string_decoder').StringDecoder;
 
-let resources = {
+const enrutador = require('./enrouter.js');
+
+global.resources = {
   devices: [
     {
       zone: 'Living room',
@@ -63,14 +65,16 @@ const server = http.createServer((req, res) => {
 
     if (rutaLimpia.includes("/")) {  // Revisa si sub-rutas (indice de arreglo)
       //Split
+      console.log('ENTRA');
       var [rutaPrincipal, indice] = rutaLimpia.split("/");
     } else {
+      console.log('SALTA', rutaLimpia);
       rutaPrincipal = rutaLimpia;
     }
 
     //3.5 ordenar la data, para pasarla por el enrutador (handler)
     const data = { // Los datos de un request de forma legible
-      indice,
+      indice: indice,
       ruta: rutaPrincipal,
       query,
       metodo,
@@ -102,29 +106,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const enrutador = {
-  ruta: (data, callback) => {
-    callback(200, { mensaje: 'esta es ruta' })
-  },
-  devices: {
-    get: (data, callback) => {
-      if(data.indice){
-        if(resources.devices[data.indice]){
-          return callback(200, resources.devices[data.indice])
-        }
-        return callback(404, { mensaje: `No found device ${data.indice}` } )
-      }
-      callback(200, resources.devices)
-    },
-    post: (data, callback) => {
-      resources.devices.push(data.payload);
-      callback(201, data.payload);
-    }
-  },
-  noEncontrado: (data, callback) => {
-    callback(404, { mensaje: 'no found' })
-  }
-}
+
 
 server.listen(5000, () => {
   console.log('server is listening en http://localhost:5000/');
