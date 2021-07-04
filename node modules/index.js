@@ -57,13 +57,21 @@ const server = http.createServer((req, res) => {
   req.on('end', () => { // cierra el decoder
     buffer += decoder.end();
 
-    if(headers['content-type'] === 'application/json'){
+    if (headers['content-type'] === 'application/json') {
       buffer = JSON.parse(buffer);
+    }
+
+    if (rutaLimpia.includes("/")) {  // Revisa si sub-rutas (indice de arreglo)
+      //Split
+      var [rutaPrincipal, indice] = rutaLimpia.split("/");
+    } else {
+      rutaPrincipal = rutaLimpia;
     }
 
     //3.5 ordenar la data, para pasarla por el enrutador (handler)
     const data = { // Los datos de un request de forma legible
-      ruta: rutaLimpia,
+      indice,
+      ruta: rutaPrincipal,
       query,
       metodo,
       headers,
@@ -72,9 +80,10 @@ const server = http.createServer((req, res) => {
 
     console.log({ data });
     // elegir el manejador dependiendo de la ruta
+
     let handler;
-    if (rutaLimpia && enrutador[rutaLimpia] && enrutador[rutaLimpia][metodo]) {
-      handler = enrutador[rutaLimpia][metodo]; // Me busca en enrutador la función a realizar de acuerdo a la ruta
+    if (rutaPrincipal && enrutador[rutaPrincipal] && enrutador[rutaPrincipal][metodo]) {
+      handler = enrutador[rutaPrincipal][metodo]; // Me busca en enrutador la función a realizar de acuerdo a la ruta
     } else {
       handler = enrutador.noEncontrado;
     }
@@ -99,8 +108,13 @@ const enrutador = {
   },
   devices: {
     get: (data, callback) => {
-      callback(200, resources.devices
-      )
+      if(data.indice){
+        if(resources.devices[data.indice]){
+          return callback(200, resources.devices[data.indice])
+        }
+        return callback(404, { mensaje: `No found device ${data.indice}` } )
+      }
+      callback(200, resources.devices)
     },
     post: (data, callback) => {
       resources.devices.push(data.payload);
@@ -108,7 +122,7 @@ const enrutador = {
     }
   },
   noEncontrado: (data, callback) => {
-    callback(404, { mensaje: 'no definido' })
+    callback(404, { mensaje: 'no found' })
   }
 }
 
