@@ -2,6 +2,29 @@ const http = require('http');
 const url = require('url');
 const stringDecoder = require('string_decoder').StringDecoder;
 
+let resources = {
+  devices: [
+    {
+      zone: 'Living room',
+      name: 'Beo play sound',
+      deviceType: 'Player',
+      id: '#PS-122'
+    },
+    {
+      zone: 'Living room',
+      name: 'Beo play sound',
+      deviceType: 'Player',
+      id: '#PS-122'
+    },
+    {
+      zone: 'Living room',
+      name: 'Beo play sound',
+      deviceType: 'Player',
+      id: '#PS-122'
+    }
+  ],
+}
+
 const server = http.createServer((req, res) => {
   // Obtener url from objeto request - req
   const urlA = req.url;
@@ -14,7 +37,7 @@ const server = http.createServer((req, res) => {
   const rutaLimpia = ruta.replace(/^\/+|\/+$/g, ''); // quita todos los /
 
   //3.1 Obtener metodo Http
-  const metodo = req.method.toUpperCase();
+  const metodo = req.method.toLocaleLowerCase();
 
   //3.2 Obtener variiables el query url
   const { query = {} } = urlParse; // Destructuración, en caso de que este vacío un objeto vacío (query={})
@@ -34,6 +57,10 @@ const server = http.createServer((req, res) => {
   req.on('end', () => { // cierra el decoder
     buffer += decoder.end();
 
+    if(headers['content-type'] === 'application/json'){
+      buffer = JSON.parse(buffer);
+    }
+
     //3.5 ordenar la data, para pasarla por el enrutador (handler)
     const data = { // Los datos de un request de forma legible
       ruta: rutaLimpia,
@@ -43,10 +70,11 @@ const server = http.createServer((req, res) => {
       payload: buffer
     };
 
+    console.log({ data });
     // elegir el manejador dependiendo de la ruta
     let handler;
-    if (rutaLimpia && enrutador[rutaLimpia]) {
-      handler = enrutador[rutaLimpia]; // Me busca en enrutador la función a realizar de acuerdo a la ruta
+    if (rutaLimpia && enrutador[rutaLimpia] && enrutador[rutaLimpia][metodo]) {
+      handler = enrutador[rutaLimpia][metodo]; // Me busca en enrutador la función a realizar de acuerdo a la ruta
     } else {
       handler = enrutador.noEncontrado;
     }
@@ -69,12 +97,15 @@ const enrutador = {
   ruta: (data, callback) => {
     callback(200, { mensaje: 'esta es ruta' })
   },
-  usuarios: (data, callback) => {
-    callback(200, [{ nombre: 'usuario1' },
-    { nombre: 'usuario2' },
-    { nombre: 'usuario3' },
-    { nombre: 'usuario4' },
-    ])
+  devices: {
+    get: (data, callback) => {
+      callback(200, resources.devices
+      )
+    },
+    post: (data, callback) => {
+      resources.devices.push(data.payload);
+      callback(201, data.payload);
+    }
   },
   noEncontrado: (data, callback) => {
     callback(404, { mensaje: 'no definido' })
