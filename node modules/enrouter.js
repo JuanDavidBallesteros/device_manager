@@ -1,7 +1,7 @@
 
 module.exports = {
     ruta: (data, callback) => {
-      callback(200, { mensaje: 'esta es ruta' })
+      return callback(200, { mensaje: 'esta es ruta' })
     },
     devices: {
       get: (data, callback) => {
@@ -11,7 +11,17 @@ module.exports = {
           }
           return callback(404, { mensaje: `No found device ${data.indice}` } )
         }
-        callback(200, global.resources.devices)
+        callback(200, global.resources.devices);
+      },
+      put: (data, callback) => {
+        if(data.indice){
+          if(global.resources.devices[data.indice]){
+            global.resources.devices[data.indice] = data.payload;
+            return callback(200, global.resources.devices[data.indice])
+          }
+          return callback(404, { mensaje: `No found device ${data.indice}` } )
+        }
+        return callback(400, { mensaje: `no index value` } );
       },
       post: (data, callback) => {
         global.resources.devices.push(data.payload);
@@ -19,6 +29,6 @@ module.exports = {
       }
     },
     noEncontrado: (data, callback) => {
-      callback(404, { mensaje: 'no found' })
+      callback(404, { mensaje: 'no found page' })
     }
   }
