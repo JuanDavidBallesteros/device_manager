@@ -13,15 +13,26 @@ const btnCancel = document.getElementById('cancelDevice');
 const alertModal = document.getElementById('alertModal');
 
 let devices = [
-    {
+    /* {
         zone: 'Living room',
         name: 'Beo play sound',
         deviceType: 'Player',
         id: '#PS-122'
-    }
+    } */
 ];
 
+function loadData(){
+    fetch('http://localhost:3000/devices').then((answer) => {
+        if(answer.ok){
+            return answer.json();
+        }
+    }).then((serverAnswer) => {
+        console.log({serverAnswer});
+    });
+}
+
 function addDeviceModal(e) {
+    loadData();
     e.preventDefault();
     if (zoneModal.value && nameModal.value && typeModal.value && idModal.value || zoneModal.value === 'Zone' && nameModal.value && typeModal.value === 'Device Type' && idModal.value) {
         let newDevice = {

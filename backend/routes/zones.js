@@ -1,19 +1,19 @@
-module.exports = function administratorsHandler (administrators){
+module.exports = function zonesHandler (zones){
     return {
     get: (data, callback) => {
       if(data.indice){
-        if(administrators[data.indice]){
-          return callback(200, administrators[data.indice])
+        if(zones[data.indice]){
+          return callback(200, zones[data.indice])
         }
         return callback(404, { mensaje: `No found device ${data.indice}` } )
       }
-      callback(200, administrators);
+      callback(200, zones);
     },
     put: (data, callback) => {
       if(data.indice){
-        if(administrators[data.indice]){
-          administrators[data.indice] = data.payload;
-          return callback(200, administrators[data.indice])
+        if(zones[data.indice]){
+          zones[data.indice] = data.payload;
+          return callback(200, zones[data.indice])
         }
         return callback(404, { mensaje: `No found device ${data.indice}` } )
       }
@@ -21,9 +21,9 @@ module.exports = function administratorsHandler (administrators){
     },
     delete: (data, callback) => {
       if(data.indice){
-        if(administrators[data.indice]){
-          temp = administrators[data.indice];
-          administrators = administrators.filter((_device, index) => index != data.indice);
+        if(zones[data.indice]){
+          temp = zones[data.indice];
+          zones = zones.filter((_device, index) => index != data.indice);
           return callback(200, `${temp.name} eliminated`)
         }
         return callback(404, { mensaje: `No found device ${data.indice}` } )
@@ -31,7 +31,8 @@ module.exports = function administratorsHandler (administrators){
       return callback(400, { mensaje: `no index value` } );
     },
     post: (data, callback) => {
-      administrators.push(data.payload);
+      //zones.push(data.payload);
+      zones = [...zones, data.payload];
       callback(201, data.payload);
     }
   }

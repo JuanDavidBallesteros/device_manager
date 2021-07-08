@@ -40,10 +40,10 @@ module.exports = (req, res) => {
   
       if (rutaLimpia.includes("/")) {  // Revisa si sub-rutas (indice de arreglo)
         //Split
-        console.log('ENTRA');
+        //console.log('ENTRA');
         var [rutaPrincipal, indice] = rutaLimpia.split("/");
       } else {
-        console.log('SALTA', rutaLimpia);
+        //console.log('SALTA', rutaLimpia);
         rutaPrincipal = rutaLimpia;
       }
   
@@ -57,7 +57,7 @@ module.exports = (req, res) => {
         payload: buffer
       };
   
-      console.log({ data });
+      //console.log({ data });
       // elegir el manejador dependiendo de la ruta
   
       let handler;
