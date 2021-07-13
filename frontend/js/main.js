@@ -12,56 +12,19 @@ const btnAdd = document.getElementById('addDevice');
 const btnCancel = document.getElementById('cancelDevice');
 const alertModal = document.getElementById('alertModal');
 
-let devices = [
-    /* {
-        zone: 'Living room',
-        name: 'Beo play sound',
-        deviceType: 'Player',
-        id: '#PS-122'
-    } */
-];
+//backend
+const url = 'http://localhost:5000/devices';
 
-function loadData(){
-    fetch('http://localhost:3000/devices').then((answer) => {
-        if(answer.ok){
-            return answer.json();
+let devices = [];
+
+async function listDevices() {
+    try {
+        const data = await fetch(url);
+        const dataServer = await data.json();
+        if (Array.isArray(dataServer) && dataServer !== undefined) {
+            devices = dataServer;
         }
-    }).then((serverAnswer) => {
-        console.log({serverAnswer});
-    });
-}
-
-function addDeviceModal(e) {
-    loadData();
-    e.preventDefault();
-    if (zoneModal.value && nameModal.value && typeModal.value && idModal.value || zoneModal.value === 'Zone' && nameModal.value && typeModal.value === 'Device Type' && idModal.value) {
-        let newDevice = {
-            zone: zoneModal.value,
-            name: nameModal.value,
-            deviceType: typeModal.value,
-            id: `#${idModal.value}`
-        }
-        if (btnAdd.innerHTML === 'Save') {
-            devices.push(newDevice);
-            listDevices();
-            $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
-            showAlert(alerts, 'Device saved', 'alert-success', 2000);
-            resetModal();
-        } else if (btnAdd.innerHTML === 'Update') {
-            devices[hiddenElement] = newDevice;
-            listDevices();
-            $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
-            showAlert(alerts, 'Device updated', 'alert-success', 2000);
-            resetModal();
-        }
-
-    } else {
-        showAlert(alertModal, 'Empty fields, please fill the form', 'alert-danger', 3000);
-    }
-}
-
-function listDevices() {
-    let listDevicesHtml = devices.map((device, index) => `
+        let listDevicesHtml = devices.map((device, index) => `
     <tr>
         <th class="title1" scope="row">${index + 1}</th>
         <td>${device.name}</td>
@@ -78,14 +41,74 @@ function listDevices() {
     </tr>
     `).join('');
 
-    devicesHTML.innerHTML = listDevicesHtml;
+        devicesHTML.innerHTML = listDevicesHtml;
+    } catch (error) {
+        throw error;
+    }
+
 }
 
-function deleteItem(element) { // DELETE INFO
+async function addDeviceModal(e) {
+    e.preventDefault();
+    if (zoneModal.value && nameModal.value && typeModal.value && idModal.value ||
+        zoneModal.value === 'Zone' && nameModal.value && typeModal.value === 'Device Type' && idModal.value) {
+        let newDevice = {
+            zone: zoneModal.value,
+            name: nameModal.value,
+            deviceType: typeModal.value,
+            id: `#${idModal.value}`
+        };
+
+        try {
+            let method = 'POST';
+            let urlToSend = url;
+            if (btnAdd.innerHTML === 'Save') {
+                showAlert(alerts, 'Device saved', 'alert-success', 2000);
+            } else if (btnAdd.innerHTML === 'Update') {
+                method = 'PUT';
+                urlToSend = `${url}/${hiddenElement}`;
+                showAlert(alerts, 'Device updated', 'alert-success', 2000);
+            }
+            let response = await fetch(urlToSend, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newDevice), 
+                mode: 'cors',
+            });
+            console.log('response', response);
+            /* const ms = await response.json();
+            console.log('json', ms); */
+            if (response.ok) {
+                $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
+                listDevices();
+                resetModal();
+            }
+        } catch (error) {
+            throw error;
+        }
+    } else {
+        showAlert(alertModal, 'Empty fields, please fill the form', 'alert-danger', 3000);
+    }
+}
+
+
+async function deleteItem(element) { // DELETE INFO
     index = element.dataset.index;
-    console.log(index);
-    devices.splice(index, 1);
-    listDevices();
+    const urlToSend = `${url}/${index}`;
+    try {
+        const response = await fetch(urlToSend, {
+            method: 'DELETE',
+        });
+        if (response.ok) {
+            console.log('response', response);
+            listDevices();
+        }
+    } catch (error) {
+        throw error;
+    }
+    
 }
 
 /* function deleteItem(element) { // DELETE INFO
@@ -93,6 +116,7 @@ function deleteItem(element) { // DELETE INFO
     devices = devices.filter((device, pos)=>pos !== index);
     listDevices();
 } */
+
 function editItem(element) { // EDIT INFO
     index = element.dataset.index;
     hiddenElement = index;
@@ -131,7 +155,10 @@ function resetModal() {
 }
 
 listDevices();
+
 resetModal();
+
+form.onsubmit = addDeviceModal;
 btnAdd.onclick = addDeviceModal;
 btnCancel.onclick = resetModal;
 

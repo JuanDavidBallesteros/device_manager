@@ -15,6 +15,19 @@ module.exports = (req, res) => {
   
     //3.1 Obtener metodo Http
     const metodo = req.method.toLocaleLowerCase();
+
+    // check options avoid block cors
+    res.setHeader('Access-Control-Allow-Origin', '*'); // everybody can access, ever url
+    //res.setHeader('Access-Control-Request-Methods', 'OPTIONS,GET,PUT,DELETE,POST'); // methods than can be requested
+    res.setHeader('Access-Control-Allow-Methods', "OPTIONS, GET, PUT, DELETE, POST");
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    
+    // Answer when recibe a method options
+    if(metodo === 'options'){
+      res.writeHead(200);
+      res.end;
+      return;
+    }
   
     //3.2 Obtener variiables el query url
     const { query = {} } = urlParse; // Destructuración, en caso de que este vacío un objeto vacío (query={})
@@ -57,7 +70,7 @@ module.exports = (req, res) => {
         payload: buffer
       };
   
-      //console.log({ data });
+      console.log({ data });
       // elegir el manejador dependiendo de la ruta
   
       let handler;
