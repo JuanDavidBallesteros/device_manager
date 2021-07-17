@@ -24,7 +24,9 @@ async function listDevices() {
         if (Array.isArray(dataServer) && dataServer !== undefined) {
             devices = dataServer;
         }
-        let listDevicesHtml = devices.map((device, index) => `
+
+        if (devices.length > 0) {
+            let listDevicesHtml = devices.map((device, index) => `
     <tr>
         <th class="title1" scope="row">${index + 1}</th>
         <td>${device.name}</td>
@@ -41,7 +43,19 @@ async function listDevices() {
     </tr>
     `).join('');
 
+            devicesHTML.innerHTML = listDevicesHtml;
+            return;
+        }
+        let listDevicesHtml = `
+            <tr>
+                <td colspan="5">Devices list is empty</td>
+            </tr>
+        `
         devicesHTML.innerHTML = listDevicesHtml;
+
+
+
+
     } catch (error) {
         throw error;
     }
@@ -67,25 +81,26 @@ async function addDeviceModal(e) {
             } else if (btnAdd.innerHTML === 'Update') {
                 method = 'PUT';
                 urlToSend = `${url}/${hiddenElement}`;
-                showAlert(alerts, 'Device updated', 'alert-success', 2000);
             }
             let response = await fetch(urlToSend, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newDevice), 
+                body: JSON.stringify(newDevice),
                 mode: 'cors',
             });
             console.log('response', response);
             /* const ms = await response.json();
             console.log('json', ms); */
             if (response.ok) {
+                showAlert(alerts, 'Device updated', 'alert-success', 2000);
                 $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
                 listDevices();
                 resetModal();
             }
         } catch (error) {
+            showAlert(alerts, error, 'alert-danger', 3000);
             throw error;
         }
     } else {
@@ -106,16 +121,11 @@ async function deleteItem(element) { // DELETE INFO
             listDevices();
         }
     } catch (error) {
+        showAlert(alerts, error, 'alert-danger', 3000);
         throw error;
     }
-    
-}
 
-/* function deleteItem(element) { // DELETE INFO
-    index = element.dataset.index;
-    devices = devices.filter((device, pos)=>pos !== index);
-    listDevices();
-} */
+}
 
 function editItem(element) { // EDIT INFO
     index = element.dataset.index;
