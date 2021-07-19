@@ -1,10 +1,11 @@
 const devicesHTML = document.getElementById('devicesList');
 const alerts = document.getElementById('alerts');
+const addDeviceBtn = document.getElementById('addDeviceButton');
 let hiddenElement = document.getElementById('index');
 
 //modal elements
 const form = document.getElementById('form');
-const zoneModal = document.getElementById('zone');
+const zoneModal = document.getElementById('zoneDevices');
 const nameModal = document.getElementById('name');
 const typeModal = document.getElementById('deviceType');
 const idModal = document.getElementById('id');
@@ -16,6 +17,37 @@ const alertModal = document.getElementById('alertModal');
 const url = 'http://localhost:5000/devices';
 
 let devices = [];
+
+async function loadZones() {
+    let zoneOptionsHTML = '';
+    let zones = [];
+    try {
+
+        const dataZones = await fetch('http://localhost:5000/zones');
+        const serverZones = await dataZones.json();
+        if (Array.isArray(serverZones) && serverZones !== undefined) {
+            zones = serverZones;
+            //serverZones.sort(serverZones.name);
+        }
+        if (zones.length > 0) {
+            zoneOptionsHTML = zones.map((zone, index) =>
+                `
+                    <option value='${zone.name}'>${zone.name}</option>
+                `
+            ).join('');
+            zoneModal.innerHTML = `
+            <option value=''>Zones</option>
+            ${zoneOptionsHTML}
+        `
+            return;
+        }
+        zoneModal.innerHTML = `
+            <option value=''>Add Zones</option>
+        `
+    } catch (error) {
+        throw error;
+    }
+}
 
 async function listDevices() {
     try {
@@ -53,34 +85,31 @@ async function listDevices() {
         `
         devicesHTML.innerHTML = listDevicesHtml;
 
-
-
-
     } catch (error) {
+        showAlert(alerts, 'Unable to load the data', 'alert-danger', 3000);
         throw error;
     }
-
 }
 
 async function addDeviceModal(e) {
     e.preventDefault();
     if (zoneModal.value && nameModal.value && typeModal.value && idModal.value ||
-        zoneModal.value === 'Zone' && nameModal.value && typeModal.value === 'Device Type' && idModal.value) {
+        zoneModal.value === 'Zone' && typeModal.value === 'Device Type' ||
+        zoneModal.value === 'Add Zones') {
         let newDevice = {
             zone: zoneModal.value,
             name: nameModal.value,
             deviceType: typeModal.value,
             id: `#${idModal.value}`
         };
-
         try {
             let method = 'POST';
             let urlToSend = url;
-            if (btnAdd.innerHTML === 'Save') {
-                showAlert(alerts, 'Device saved', 'alert-success', 2000);
-            } else if (btnAdd.innerHTML === 'Update') {
+            let saveAlert = true;
+            if (btnAdd.innerHTML === 'Update') {
                 method = 'PUT';
                 urlToSend = `${url}/${hiddenElement}`;
+                saveAlert = false;
             }
             let response = await fetch(urlToSend, {
                 method,
@@ -90,11 +119,12 @@ async function addDeviceModal(e) {
                 body: JSON.stringify(newDevice),
                 mode: 'cors',
             });
-            console.log('response', response);
-            /* const ms = await response.json();
-            console.log('json', ms); */
             if (response.ok) {
-                showAlert(alerts, 'Device updated', 'alert-success', 2000);
+                if (saveAlert) {
+                    showAlert(alerts, 'Device saved', 'alert-success', 2000);
+                } else {
+                    showAlert(alerts, 'Device updated', 'alert-success', 2000);
+                }
                 $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
                 listDevices();
                 resetModal();
@@ -117,17 +147,16 @@ async function deleteItem(element) { // DELETE INFO
             method: 'DELETE',
         });
         if (response.ok) {
-            console.log('response', response);
             listDevices();
         }
     } catch (error) {
         showAlert(alerts, error, 'alert-danger', 3000);
         throw error;
     }
-
 }
 
 function editItem(element) { // EDIT INFO
+    loadZones();
     index = element.dataset.index;
     hiddenElement = index;
 
@@ -171,5 +200,5 @@ resetModal();
 form.onsubmit = addDeviceModal;
 btnAdd.onclick = addDeviceModal;
 btnCancel.onclick = resetModal;
-
+addDeviceButton.onclick = loadZones;
 

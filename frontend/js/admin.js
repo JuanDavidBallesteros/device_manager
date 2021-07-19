@@ -12,15 +12,12 @@ const btnAdd = document.getElementById('addModal');
 const btnCancel = document.getElementById('cancel');
 const alertModal = document.getElementById('alertModal');
 
-let admins = [
-    {
-        name: 'Camilo',
-        lastName: 'Perez',
-        id: '239002',
-    }
-];
+let admins = [];
 
-function addDeviceModal(e) {
+//backend
+const url = 'http://localhost:5000/administrators';
+
+async function addAmdinModal(e) {
     e.preventDefault();
     if (lastNameModal.value && nameModal.value && idModal.value) {
         let data = {
@@ -28,27 +25,52 @@ function addDeviceModal(e) {
             name: nameModal.value,
             id: idModal.value,
         }
-        if (btnAdd.innerHTML === 'Save') {
-            admins.push(data);
-            listAdmins();
-            $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
-            showAlert(alerts, 'Device saved', 'alert-success', 2000);
-            resetModal();
-        } else if(btnAdd.innerHTML === 'Update'){
-            admins[hiddenElement] = data;
-            listAdmins();
-            $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
-            showAlert(alerts, 'Device updated', 'alert-success', 2000);
-            resetModal();
+        try {
+            let method = 'POST';
+            let urlToSend = url;
+            let saveAlert = true;
+            if (btnAdd.innerHTML === 'Update') {
+                method = 'PUT';
+                urlToSend = `${url}/${hiddenElement}`;
+                saveAlert = false;
+            }
+            let response = await fetch(urlToSend, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+                mode: 'cors',
+            });
+            if (response.ok) {
+                if (saveAlert) {
+                    showAlert(alerts, 'Device saved', 'alert-success', 2000);
+                } else {
+                    showAlert(alerts, 'Device updated', 'alert-success', 2000);
+                }
+                $('#exampleModal').modal('hide'); //or  $('#IDModal').modal('toggle');
+                listAdmins();
+                resetModal();
+            }
+        } catch (error) {
+            showAlert(alerts, error, 'alert-danger', 3000);
+            throw error;
         }
-
     } else {
         showAlert(alertModal, 'Empty fields, please fill the form', 'alert-danger', 3000);
     }
 }
 
-function listAdmins() {
-    let listAdminsHtml = admins.map((device, index) => `
+async function listAdmins() {
+    try {
+        const data = await fetch(url);
+        const dataServer = await data.json();
+        if (Array.isArray(dataServer) && dataServer !== undefined) {
+            admins = dataServer;
+        }
+
+        if (admins.length > 0) {
+            let listAdminsHtml = admins.map((device, index) => `
     <tr>
         <th class="title1" scope="row">${index + 1}</th>
         <td>${device.name}</td>
@@ -64,15 +86,36 @@ function listAdmins() {
         </td>
     </tr>
     `).join('');
+            adminsHTML.innerHTML = listAdminsHtml;
+            return;
+        }
+        let listAdminsHtml = `
+            <tr>
+                <td colspan="5">Admins list is empty</td>
+            </tr>
+        `
+        adminsHTML.innerHTML = listAdminsHtml;
 
-    adminsHTML.innerHTML = listAdminsHtml;
+    } catch (error) {
+        showAlert(alerts, 'Unable to load the data', 'alert-danger', 3000);
+        throw error;
+    }
 }
 
-function deleteItem(element) { // DELETE INFO
+async function deleteItem(element) { // DELETE INFO
     index = element.dataset.index;
-    console.log(index);
-    admins.splice(index, 1);
-    listAdmins();
+    const urlToSend = `${url}/${index}`;
+    try {
+        const response = await fetch(urlToSend, {
+            method: 'DELETE',
+        });
+        if (response.ok) {
+            listAdmins();
+        }
+    } catch (error) {
+        showAlert(alerts, error, 'alert-danger', 3000);
+        throw error;
+    }
 }
 
 function editItem(element) { // EDIT INFO
@@ -113,5 +156,5 @@ function resetModal() {
 
 listAdmins();
 resetModal();
-btnAdd.onclick = addDeviceModal;
+btnAdd.onclick = addAmdinModal;
 btnCancel.onclick = resetModal;
