@@ -13,7 +13,7 @@ const btnCancel = document.getElementById('cancel');
 const alertModal = document.getElementById('alertModal');
 
 //backend
-const url = 'http://localhost:5000/zones';
+const url = 'https://devices-backend-juandavidballesteros.vercel.app/zones';
 
 let zones = [];
 let zonesDevices = [];
@@ -78,7 +78,7 @@ async function showZoneDevices(zone) {
 async function listDevicesInZone(zoneName) {
     let devices = [];
     try {
-        const data = await fetch('http://localhost:5000/devices');
+        const data = await fetch('https://devices-backend-juandavidballesteros.vercel.app/devices');
         const dataServer = await data.json();
         if (Array.isArray(dataServer) && dataServer !== undefined) {
             devices = dataServer;

@@ -15,7 +15,7 @@ const alertModal = document.getElementById('alertModal');
 let admins = [];
 
 //backend
-const url = 'http://localhost:5000/administrators';
+const url = 'https://devices-backend-juandavidballesteros.vercel.app/administrators';
 
 async function addAmdinModal(e) {
     e.preventDefault();
